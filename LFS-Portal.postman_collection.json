@@ -1,0 +1,961 @@
+{
+	"info": {
+		"_postman_id": "f1b1f359-d63e-4c45-9f6b-2dc5c350e58e",
+		"name": "LFS Portal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Authenticate User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f2ea488-4dd6-4153-bc47-f1e31ba1aa94",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "70f911fa-6d65-464a-9c66-545c9d3bbe76",
+								"exec": [
+									"pm.globals.set(\"COOKIE\", responseHeaders['Set-Cookie'])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"{{USER_EMAIL}}\",\n\t\"password\": \"{{USER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/user/authenticate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"user",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f2ea488-4dd6-4153-bc47-f1e31ba1aa94",
+								"exec": [
+									"var uuid = require('uuid');",
+									"const rand = uuid.v4();",
+									"pm.globals.set('USER_EMAIL', `jacques-${rand}@gmail.com`);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "70f911fa-6d65-464a-9c66-545c9d3bbe76",
+								"exec": [
+									"const jsonData = pm.response.json()",
+									"pm.globals.set('USER_ID', jsonData.ID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Jacques\",\n\t\"lastName\": \"Vincilione\",\n\t\"email\": \"{{USER_EMAIL}}\",\n\t\"userType\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/user",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f2ea488-4dd6-4153-bc47-f1e31ba1aa94",
+								"exec": [
+									"pm.globals.set('USER_PASSWORD', 'my super secure password');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"password\": \"my super secure password\",\n\t\"email\": \"{{USER_EMAIL}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/user/{{USER_ID}}/password",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"user",
+								"{{USER_ID}}",
+								"password"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Create Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									"var uuid = require('uuid');",
+									"const rand = uuid.v4();",
+									"const customerName = 'Roger';",
+									"pm.globals.set('FULL_NAME', `${customerName} ${rand}`);",
+									"pm.globals.set('EMAIL', `${customerName}-${rand}@gmail.com`);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "192879af-a671-4339-a6a7-33bbec4b9f02",
+								"exec": [
+									"const jsonData = pm.response.json()",
+									"pm.globals.set('CUSTOMER_ID', jsonData.ID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"{{FULL_NAME}}\",\n\t\"email\": \"{{EMAIL}}\",\n\t\"address\": \"My Address\",\n\t\"address2\": \"My Address line 2\",\n\t\"state\": \"GA\",\n\t\"city\": \"Douglasville\",\n\t\"postalCode\": \"30135\",\n\t\"phoneNumber\": \"6782498169\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invalid Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"Roger Something\",\n\t\"address\": \"My Address\",\n\t\"address2\": \"My Address line 2\",\n\t\"state\": \"GA\",\n\t\"city\": \"Douglasville\",\n\t\"postalCode\": \"30135\",\n\t\"phoneNumber\": \"6782498169\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer Duplicate Email",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"{{FULL_NAME}}\",\n\t\"email\": \"{{EMAIL}}\",\n\t\"address\": \"My Address\",\n\t\"address2\": \"My Address line 2\",\n\t\"state\": \"GA\",\n\t\"city\": \"Douglasville\",\n\t\"postalCode\": \"30135\",\n\t\"phoneNumber\": \"6782498169\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									"var uuid = require('uuid');",
+									"const rand = uuid.v4();",
+									"const customerName = 'Roger';",
+									"pm.globals.set('FULL_NAME_UPDATED', `${customerName} updated ${rand}`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"{{FULL_NAME_UPDATED}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer/{{CUSTOMER_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer",
+								"{{CUSTOMER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer/{{CUSTOMER_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer",
+								"{{CUSTOMER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer/{{CUSTOMER_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer",
+								"{{CUSTOMER_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Job",
+			"item": [
+				{
+					"name": "Create Job",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									"pm.environment.set('DATE', new Date());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "192879af-a671-4339-a6a7-33bbec4b9f02",
+								"exec": [
+									"const jsonData = pm.response.json()",
+									"pm.globals.set('JOB_ID', jsonData.ID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"Maximus Meridius\",\n\t\"address\": \"My Address\",\n\t\"address2\": \"My Address line 2\",\n\t\"state\": \"GA\",\n\t\"city\": \"Douglasville\",\n\t\"postalCode\": \"30135\",\n\t\"phoneNumber\": \"6782498169\",\n\t\"orderNumber\": \"12dbas31\",\n\t\"instructions\": \"These are instructions!\",\n\t\"scheduledDate\": \"{{DATE}}\",\n\t\"status\": 0,\n\t\"partsCost\": 27.45,\n\t\"laborCost\": 300.00,\n\t\"customerId\": 29\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/job",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invalid Job",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									"pm.environment.set('DATE', new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"fullName\": \"Maximus Meridius\",\n\t\"address\": \"My Address\",\n\t\"address2\": \"My Address line 2\",\n\t\"state\": \"GA\",\n\t\"city\": \"Douglasville\",\n\t\"postalCode\": \"30135\",\n\t\"phoneNumber\": \"6782498169\",\n\t\"orderNumber\": \"12dbas31\",\n\t\"instructions\": \"These are instructions!\",\n\t\"scheduledDate\": \"{{DATE}}\",\n\t\"status\": 0,\n\t\"partsCost\": 27.45,\n\t\"laborCost\": 300.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/job",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Job",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"address\": \"My Address has been updated\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/job/{{JOB_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"job",
+								"{{JOB_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Job",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/job/{{JOB_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"job",
+								"{{JOB_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Jobs",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/job",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "90700e4b-5f4c-409e-9148-45a066bfaf92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{COOKIE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/customer/{{CUSTOMER_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"customer",
+								"{{CUSTOMER_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
