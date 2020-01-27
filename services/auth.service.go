@@ -19,8 +19,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-// this needs to be changed to a env variable
-var jwtKey = []byte("my_secret_key")
+var jwtKey = []byte(utils.Config.JWT_SECRET)
 
 func GenerateJWT(user models.AuthUser) (string, error) {
 	// expire after two hours
