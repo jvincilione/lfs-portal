@@ -18,6 +18,7 @@ func userRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	{
 		userRoutes.POST("/", userController.CreateUser)
 		userRoutes.POST("/authenticate", userController.AuthenticateUser)
+		userRoutes.POST("/logout", userController.LogoutUser)
 		userRoutes.GET("/", userController.GetAllUsers)
 		userRoutes.GET("/:id", userController.GetUserById)
 		userRoutes.PATCH("/:id", userController.UpdateUser)

@@ -22,6 +22,7 @@ type (
 		UpdateUser(c *gin.Context)
 		DeleteUser(c *gin.Context)
 		AuthenticateUser(c *gin.Context)
+		LogoutUser(c *gin.Context)
 		UpdateUserPassword(c *gin.Context)
 	}
 
@@ -161,9 +162,14 @@ func (controller userController) AuthenticateUser(c *gin.Context) {
 
 	expirationTime := int(time.Now().Add(120 * time.Minute).Unix())
 
-	c.SetCookie("lfs-auth-token", token, expirationTime, "/", "portal.labontefurnitureserv.com", http.SameSiteNoneMode, false, false)
+	c.SetCookie("lfs-auth-token", token, expirationTime, "/", utils.Config.DOMAIN, http.SameSiteNoneMode, false, false)
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func (controller userController) LogoutUser(c *gin.Context) {
+	services.LogoutUser(c)
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func (controller userController) UpdateUserPassword(c *gin.Context) {

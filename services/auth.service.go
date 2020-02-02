@@ -6,6 +6,7 @@ import (
 	"lfs-portal/models"
 	"lfs-portal/utils"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -82,12 +83,15 @@ func IsAuthorized(token string, resource interface{}, action enums.Action) bool 
 	return true
 }
 
+func LogoutUser(c *gin.Context) {
+	c.SetCookie("lfs-auth-token", "", 0, "/", utils.Config.DOMAIN, http.SameSiteNoneMode, false, false)
+}
+
 func AuthenticationMiddleware(c *gin.Context) {
-	if c.FullPath() == "/api/user/authenticate" {
+	if c.FullPath() == "/api/user/authenticate" || c.FullPath() == "/api/user/logout" {
 		c.Next()
 		return
 	}
-
 	token, err := c.Cookie("lfs-auth-token")
 	if err != nil {
 		logrus.Error(fmt.Sprintf("[AuthenticationMiddleware] Error getting cookie, %v", err))
@@ -102,8 +106,31 @@ func AuthenticationMiddleware(c *gin.Context) {
 	}
 
 	if !IsAuthenticated(token) {
+		LogoutUser(c)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, utils.GetUnauthorizedError())
 		return
+	}
+
+	if c.Request.Method == "POST" || c.Request.Method == "PATH" || c.Request.Method == "DELETE" {
+		bearerToken := c.GetHeader("Authorization")
+		if bearerToken == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"status":  http.StatusUnauthorized,
+				"message": "You are not authorized - no bearer",
+			})
+			return
+		}
+		splitToken := strings.Split(bearerToken, "Bearer")
+		bearerToken = splitToken[1]
+		logrus.Info(bearerToken)
+		logrus.Info(token)
+		if bearerToken != token {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"status":  http.StatusUnauthorized,
+				"message": "You are not authorized - bearer doesn't match",
+			})
+			return
+		}
 	}
 	c.Next()
 }

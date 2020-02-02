@@ -14,6 +14,7 @@ type AppConfig struct {
 	DB_PORT    int
 	DB_NAME    string
 	JWT_SECRET string
+	DOMAIN     string
 }
 
 var Config AppConfig
@@ -38,5 +39,8 @@ func NewConfig() {
 	}
 	if Config.DB_USER == "" {
 		Config.DB_USER = "root"
+	}
+	if Config.DOMAIN == "" {
+		Config.DOMAIN = "localhost:8080"
 	}
 }
