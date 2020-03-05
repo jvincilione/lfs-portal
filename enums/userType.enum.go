@@ -4,7 +4,7 @@ type UserType int
 
 const (
 	Admin UserType = iota
-	CustomerAdmin
-	CustomerStaff
+	CompanyAdmin
+	CompanyStaff
 	Guest
 )

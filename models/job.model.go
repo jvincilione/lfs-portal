@@ -24,8 +24,8 @@ type (
 		PartsCost     float64         `json:"partsCost,omitempty" gorm:"type:float"`
 		LaborCost     float64         `json:"laborCost,omitempty" gorm:"type:float"`
 		Notes         string          `json:"notes,omitempty" validate:"-" gorm:"type:text"`
-		CustomerID    uint            `json:"customerId,omitempty" validate:"required" gorm:"type:int(10)unsigned"`
-		Customer      Customer        `json:"customer" validate:"-" gorm:"association_autoupdate:false "`
+		CompanyID    uint            `json:"companyId,omitempty" validate:"required" gorm:"type:int(10)unsigned"`
+		Company      Company        `json:"company" validate:"-" gorm:"association_autoupdate:false "`
 	}
 
 	ListJob struct {
@@ -60,7 +60,7 @@ func NewJob(db *gorm.DB) JobModel {
 
 func (model jobModel) GetJobById(ID int) (*Job, error) {
 	var job Job
-	err := model.db.Preload("Customer").First(&job, ID).Error
+	err := model.db.Preload("Company").First(&job, ID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (model jobModel) CreateJob(job Job) (*Job, error) {
 		return nil, err
 	}
 
-	model.db.Model(&newJob).Related(&newJob.Customer)
+	model.db.Model(&newJob).Related(&newJob.Company)
 
 	return &newJob, nil
 }
@@ -99,7 +99,7 @@ func (model jobModel) UpdateJob(job Job) (*Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	model.db.Model(&updatedJob).Related(&updatedJob.Customer)
+	model.db.Model(&updatedJob).Related(&updatedJob.Company)
 	return &updatedJob, nil
 }
 

@@ -28,6 +28,6 @@ func NewDb() *gorm.DB {
 
 func migrateModels() {
 	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Customer{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
-	db.AutoMigrate(&models.Job{}).AddForeignKey("customer_id", "customers(id)", "RESTRICT", "RESTRICT")
+	db.AutoMigrate(&models.Company{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
+	db.AutoMigrate(&models.Job{}).AddForeignKey("company_id", "companies(id)", "RESTRICT", "RESTRICT")
 }

@@ -13,8 +13,11 @@ type (
 		FirstName string         `json:"firstName,omitempty" validate:"required" gorm:"type:varchar(100);not null"`
 		LastName  string         `json:"lastName,omitempty" validate:"required" gorm:"type:varchar(100);not null"`
 		Email     string         `json:"email,omitempty" validate:"required,email" gorm:"type:varchar(100);unique_index"`
+		Phone     string         `json:"phone,omitempty" validate:"required,phone" gorm:"type:varchar(15)"`
+		Title     string         `json:"title,omitempty" validate:"-" gorm:"type:varchar(255)"`
 		UserType  enums.UserType `json:"userType,omitempty" gorm:"type:int;not null"`
 		Password  string         `json:"password,omitempty" gorm:"type:text"`
+		Company   []Company      `json:"companies" gorm:"ForeignKey:UserID"`
 	}
 
 	PublicUser struct {
@@ -24,14 +27,18 @@ type (
 		FirstName string         `json:"firstName,omitempty"`
 		LastName  string         `json:"lastName,omitempty"`
 		Email     string         `json:"email,omitempty"`
-		UserType  enums.UserType `json:"userType,omitempty"`
+		Title     string         `json:"title,omitempty"`
+		UserType  enums.UserType `json:"userType"`
+		Company   []Company      `json:"companies" gorm:"ForeignKey:UserID"`
 	}
 
 	AuthUser struct {
-		ID       uint
-		Email    string         `json:"email" validate:"required"`
-		Password string         `json:"password" validate:"required"`
-		UserType enums.UserType `json:"userType,omitempty"`
+		ID        uint
+		Email     string         `json:"email" validate:"required"`
+		Password  string         `json:"password" validate:"required"`
+		FirstName string         `json:"firstName" validate:"-"`
+		LastName  string         `json:"lastName" validate:"-"`
+		UserType  enums.UserType `json:"userType,omitempty"`
 	}
 
 	UserModel interface {
@@ -52,6 +59,10 @@ type (
 
 func NewUser(db *gorm.DB) UserModel {
 	return userModel{db}
+}
+
+func (PublicUser) TableName() string {
+	return "users"
 }
 
 func (model userModel) GetUserById(ID int) (*PublicUser, error) {
@@ -83,7 +94,7 @@ func (model userModel) GetUserForAuthentication(email string) (*AuthUser, error)
 
 func (model userModel) GetAllUsers() ([]PublicUser, error) {
 	var userList []PublicUser
-	err := model.db.Table("users").Find(&userList).Error
+	err := model.db.Preload("Company").Find(&userList).Error
 
 	if err != nil {
 		return nil, err

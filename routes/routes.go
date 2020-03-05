@@ -15,7 +15,7 @@ func InitializeRoutes() *gin.Engine {
 	router.Use(services.AuthenticationMiddleware)
 	api := router.Group("/api")
 	{
-		customerRoutes(api, db)
+		companyRoutes(api, db)
 		jobRoutes(api, db)
 		userRoutes(api, db)
 	}

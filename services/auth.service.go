@@ -15,8 +15,10 @@ import (
 )
 
 type Claims struct {
-	Email    string         `json:"email"`
-	UserType enums.UserType `json:"userType"`
+	Email     string         `json:"email"`
+	FirstName string         `json:"firstName"`
+	LastName  string         `json:"lastName"`
+	UserType  enums.UserType `json:"userType"`
 	jwt.StandardClaims
 }
 
@@ -26,8 +28,10 @@ func GenerateJWT(user models.AuthUser) (string, error) {
 	// expire after two hours
 	expirationTime := time.Now().Add(120 * time.Minute)
 	claims := &Claims{
-		Email:    user.Email,
-		UserType: user.UserType,
+		Email:     user.Email,
+		UserType:  user.UserType,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
@@ -73,7 +77,7 @@ func IsAuthorized(token string, resource interface{}, action enums.Action) bool 
 	}
 
 	if action == enums.Delete {
-		// admin and customer admin
+		// admin and company admin
 
 	}
 
@@ -121,7 +125,7 @@ func AuthenticationMiddleware(c *gin.Context) {
 			return
 		}
 		splitToken := strings.Split(bearerToken, "Bearer")
-		bearerToken = splitToken[1]
+		bearerToken = strings.Trim(splitToken[1], " ")
 		logrus.Info(bearerToken)
 		logrus.Info(token)
 		if bearerToken != token {
