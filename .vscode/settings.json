@@ -1,8 +1,9 @@
 {
-  "eslint.enable": false,
+  "eslint.enable": true,
   "tslint.enable": false,
   "files.exclude": {
     ".vscode": true
   },
-  "deepscan.enable": true
+  "deepscan.enable": false,
+  "deepscan.ignoreConfirmWarning": true
 }

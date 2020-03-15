@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"lfs-portal/models"
 	"lfs-portal/services"
 	"lfs-portal/utils"
@@ -17,6 +16,7 @@ type (
 	CompanyController interface {
 		GetCompanyById(c *gin.Context)
 		GetAllCompanies(c *gin.Context)
+		GetUserCompanies(c *gin.Context)
 		CreateCompany(c *gin.Context)
 		UpdateCompany(c *gin.Context)
 		DeleteCompany(c *gin.Context)
@@ -34,7 +34,7 @@ func NewCompanyController(svc services.CompanyService) CompanyController {
 func (controller companyController) GetCompanyById(c *gin.Context) {
 	ID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("%v", err)})
+		c.JSON(http.StatusBadRequest, utils.GetBadRequestError(err))
 		return
 	}
 	company, err := controller.svc.GetCompanyById(ID)
@@ -53,6 +53,21 @@ func (controller companyController) GetCompanyById(c *gin.Context) {
 
 func (controller companyController) GetAllCompanies(c *gin.Context) {
 	companies, err := controller.svc.GetAllCompanies()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.GetGenericError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"resources": companies})
+}
+
+func (controller companyController) GetUserCompanies(c *gin.Context) {
+	ID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.GetBadRequestError(err))
+		return
+	}
+	companies, err := controller.svc.GetUserCompanies(uint(ID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.GetGenericError(err))
 		return
@@ -128,13 +143,13 @@ func (controller companyController) UpdateCompany(c *gin.Context) {
 func (controller companyController) DeleteCompany(c *gin.Context) {
 	ID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("%v", err)})
+		c.JSON(http.StatusBadRequest, utils.GetBadRequestError(err))
 		return
 	}
 	err = controller.svc.DeleteCompany(ID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("%v", err)})
+		c.JSON(http.StatusInternalServerError, utils.GetBadRequestError(err))
 		return
 	}
 

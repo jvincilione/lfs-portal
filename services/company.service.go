@@ -11,6 +11,7 @@ type (
 	CompanyService interface {
 		GetCompanyById(ID int) (*models.Company, error)
 		GetAllCompanies() ([]models.Company, error)
+		GetUserCompanies(userID uint) ([]models.Company, error)
 		CreateCompany(company models.Company) (*models.Company, error)
 		UpdateCompany(company models.Company) (*models.Company, error)
 		DeleteCompany(ID int) error
@@ -36,6 +37,15 @@ func (svc companyService) GetCompanyById(ID int) (*models.Company, error) {
 
 func (svc companyService) GetAllCompanies() ([]models.Company, error) {
 	companies, err := svc.model.GetAllCompanies()
+	if err != nil {
+		logrus.Error(fmt.Sprintf("[GetAllCompanies] Error getting companies, %v", err))
+		return nil, err
+	}
+	return companies, nil
+}
+
+func (svc companyService) GetUserCompanies(userId uint) ([]models.Company, error) {
+	companies, err := svc.model.GetUserCompanies(userId)
 	if err != nil {
 		logrus.Error(fmt.Sprintf("[GetAllCompanies] Error getting companies, %v", err))
 		return nil, err

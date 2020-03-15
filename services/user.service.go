@@ -14,6 +14,7 @@ type (
 		GetUserById(ID int) (*models.PublicUser, error)
 		GetUserByEmail(email string) (*models.PublicUser, error)
 		GetAllUsers() ([]models.PublicUser, error)
+		GetCompanyUsers(companyID uint) ([]models.PublicUser, error)
 		CreateUser(user models.User) (*models.PublicUser, error)
 		UpdateUser(user models.PublicUser) (*models.PublicUser, error)
 		DeleteUser(ID int) error
@@ -58,7 +59,19 @@ func (svc userService) GetAllUsers() ([]models.PublicUser, error) {
 	return users, nil
 }
 
+func (svc userService) GetCompanyUsers(companyID uint) ([]models.PublicUser, error) {
+	users, err := svc.model.GetCompanyUsers(companyID)
+	if err != nil {
+		logrus.Error(fmt.Sprintf("[GetAllUsers] Error getting all users, %v", err))
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (svc userService) CreateUser(user models.User) (*models.PublicUser, error) {
+	hashedPass := hashAndSalt([]byte(user.Password))
+	user.Password = hashedPass
 	newUser, err := svc.model.CreateUser(user)
 	if err != nil {
 		logrus.Error(fmt.Sprintf("[CreateUser] Error creating user, %v", err))

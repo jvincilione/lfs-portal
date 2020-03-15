@@ -15,6 +15,7 @@ type AppConfig struct {
 	DB_NAME    string
 	JWT_SECRET string
 	DOMAIN     string
+	GIN_MODE   string
 }
 
 var Config AppConfig

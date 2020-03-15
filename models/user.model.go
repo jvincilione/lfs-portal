@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 type (
@@ -13,11 +14,12 @@ type (
 		FirstName string         `json:"firstName,omitempty" validate:"required" gorm:"type:varchar(100);not null"`
 		LastName  string         `json:"lastName,omitempty" validate:"required" gorm:"type:varchar(100);not null"`
 		Email     string         `json:"email,omitempty" validate:"required,email" gorm:"type:varchar(100);unique_index"`
-		Phone     string         `json:"phone,omitempty" validate:"required,phone" gorm:"type:varchar(15)"`
+		Phone     string         `json:"phone,omitempty" validate:"-" gorm:"type:varchar(15)"`
 		Title     string         `json:"title,omitempty" validate:"-" gorm:"type:varchar(255)"`
-		UserType  enums.UserType `json:"userType,omitempty" gorm:"type:int;not null"`
-		Password  string         `json:"password,omitempty" gorm:"type:text"`
+		UserType  enums.UserType `json:"userType,omitempty" validate:"required" gorm:"type:int;not null"`
+		Password  string         `json:"password,omitempty" validate:"required" gorm:"type:text"`
 		Company   []Company      `json:"companies" gorm:"ForeignKey:UserID"`
+		CompanyID uint           `json:"companyId" gorm:"type:int"`
 	}
 
 	PublicUser struct {
@@ -26,10 +28,12 @@ type (
 		UpdatedAt time.Time
 		FirstName string         `json:"firstName,omitempty"`
 		LastName  string         `json:"lastName,omitempty"`
+		Phone     string         `json:"phone,omitempty"`
 		Email     string         `json:"email,omitempty"`
 		Title     string         `json:"title,omitempty"`
 		UserType  enums.UserType `json:"userType"`
 		Company   []Company      `json:"companies" gorm:"ForeignKey:UserID"`
+		CompanyID uint           `json:"companyId" gorm:"type:int"`
 	}
 
 	AuthUser struct {
@@ -39,6 +43,8 @@ type (
 		FirstName string         `json:"firstName" validate:"-"`
 		LastName  string         `json:"lastName" validate:"-"`
 		UserType  enums.UserType `json:"userType,omitempty"`
+		Companies []uint         `json:"companies,omitempty"`
+		CompanyID uint           `json:"companyId" gorm:"type:int"`
 	}
 
 	UserModel interface {
@@ -46,6 +52,7 @@ type (
 		GetUserByEmail(email string) (*PublicUser, error)
 		GetUserForAuthentication(email string) (*AuthUser, error)
 		GetAllUsers() ([]PublicUser, error)
+		GetCompanyUsers(companyID uint) ([]PublicUser, error)
 		CreateUser(user User) (*PublicUser, error)
 		UpdateUser(user PublicUser) (*PublicUser, error)
 		UpdateUserPassword(user User) error
@@ -89,12 +96,34 @@ func (model userModel) GetUserForAuthentication(email string) (*AuthUser, error)
 	if err != nil {
 		return nil, err
 	}
+	var companies []Company
+	err = model.db.Table("companies").Where("user_id = ?", user.ID).Find(&companies).Error
+	if err != nil {
+		return nil, err
+	}
+	companyIDs := []uint{}
+	for _, company := range companies {
+		companyIDs = append(companyIDs, company.ID)
+	}
+	companyIDs = append(companyIDs, user.CompanyID)
+	user.Companies = companyIDs
+	logrus.Errorf("user id %v", user.ID)
 	return &user, nil
 }
 
 func (model userModel) GetAllUsers() ([]PublicUser, error) {
 	var userList []PublicUser
 	err := model.db.Preload("Company").Find(&userList).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return userList, nil
+}
+
+func (model userModel) GetCompanyUsers(companyID uint) ([]PublicUser, error) {
+	var userList []PublicUser
+	err := model.db.Preload("Company").Where("company_id = ?", companyID).Find(&userList).Error
 
 	if err != nil {
 		return nil, err

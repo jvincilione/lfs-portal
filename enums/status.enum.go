@@ -5,9 +5,11 @@ type MessageStatus int
 
 const (
 	Pending JobStatus = iota
+	Accepted
 	Scheduled
 	AwaitingPayment
 	Closed
+	Rejected
 )
 
 const (

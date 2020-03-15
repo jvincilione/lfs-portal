@@ -12,6 +12,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+.vscode/
 
 # IDE - VSCode
 .vscode/*
@@ -21,8 +22,14 @@
 !.vscode/extensions.json
 .history/*
 
+# built files
+lfs-portal
+
 # misc
 /coverage
+
+# front-end
+lfs-frontend
 
 # System Files
 .DS_Store

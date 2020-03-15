@@ -15,10 +15,13 @@ import (
 )
 
 type Claims struct {
+	ID        uint           `json:"id"`
 	Email     string         `json:"email"`
 	FirstName string         `json:"firstName"`
 	LastName  string         `json:"lastName"`
 	UserType  enums.UserType `json:"userType"`
+	Companies []uint         `json:"companies"`
+	CompanyID uint           `json:"companyId"`
 	jwt.StandardClaims
 }
 
@@ -28,10 +31,13 @@ func GenerateJWT(user models.AuthUser) (string, error) {
 	// expire after two hours
 	expirationTime := time.Now().Add(120 * time.Minute)
 	claims := &Claims{
+		ID:        user.ID,
 		Email:     user.Email,
 		UserType:  user.UserType,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
+		Companies: user.Companies,
+		CompanyID: user.CompanyID,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),

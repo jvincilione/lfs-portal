@@ -7,7 +7,6 @@ import (
 type (
 	Company struct {
 		gorm.Model
-		Email       string `json:"email,omitempty" validate:"required,email" gorm:"type:varchar(100);unique_index"`
 		Name        string `json:"name,omitempty" validate:"required" gorm:"type:varchar(100)"`
 		Address     string `json:"address,omitempty" validate:"required" gorm:"type:varchar(255)"`
 		Address2    string `json:"address2,omitempty" gorm:"type:varchar(255)"`
@@ -15,12 +14,14 @@ type (
 		State       string `json:"state,omitempty" gorm:"type:varchar(15)"`
 		PostalCode  string `json:"postalCode,omitempty" validate:"required" gorm:"type:varchar(10)"`
 		PhoneNumber string `json:"phoneNumber,omitempty" validate:"required" gorm:"type:varchar(11)"`
-		UserID      uint   `json:"userID,omitempty" validate:"-" gorm:"type:int(10)unsigned"`
+		JobCount    uint64 `json:"jobCount" gorm:"-"`
+		UserID      uint   `json:"userId,omitempty" validate:"-" gorm:"type:int(10)unsigned"`
 	}
 
 	CompanyModel interface {
 		GetCompanyById(ID int) (*Company, error)
 		GetAllCompanies() ([]Company, error)
+		GetUserCompanies(userId uint) ([]Company, error)
 		CreateCompany(company Company) (*Company, error)
 		UpdateCompany(company Company) (*Company, error)
 		DeleteCompany(ID uint) error
@@ -49,6 +50,25 @@ func (model companyModel) GetAllCompanies() ([]Company, error) {
 	err := model.db.Find(&companies).Error
 	if err != nil {
 		return nil, err
+	}
+	for i := range companies {
+		company := &companies[i]
+		model.db.Table("jobs").Where("company_id = ? AND status != 4 AND status != 5", company.ID).Count(&company.JobCount)
+	}
+	return companies, nil
+}
+
+func (model companyModel) GetUserCompanies(userId uint) ([]Company, error) {
+	var companies []Company
+
+	err := model.db.Where("user_id = ?", userId).Find(&companies).Error
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range companies {
+		company := &companies[i]
+		model.db.Table("jobs").Where("company_id = ? AND status != 4 AND status != 5", company.ID).Count(&company.JobCount)
 	}
 	return companies, nil
 }
