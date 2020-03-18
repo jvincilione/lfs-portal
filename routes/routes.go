@@ -28,7 +28,6 @@ func InitializeRoutes() *gin.Engine {
 	db := database.NewDb()
 	router = gin.Default()
 	router.Use(services.AuthenticationMiddleware)
-	router.Use(static.Serve("/", static.LocalFile("./lfs-frontend/build", true)))
 
 	JobModel = models.NewJob(db)
 	JobService = services.NewJobService(JobModel)
@@ -48,5 +47,6 @@ func InitializeRoutes() *gin.Engine {
 		jobRoutes(api)
 		userRoutes(api)
 	}
+	router.Use(static.Serve("/", static.LocalFile("./lfs-frontend/build", true)))
 	return router
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"lfs-portal/routes"
 	"lfs-portal/utils"
 
@@ -13,9 +14,5 @@ func init() {
 
 func main() {
 	router := routes.InitializeRoutes()
-	err := router.Run()
-	if err != nil {
-		logrus.Fatal("Error initializing routes.")
-		return
-	}
+	logrus.Fatal(router.Run(fmt.Sprintf("0.0.0.0:%d", utils.Config.PORT)))
 }

@@ -7,7 +7,7 @@ import (
 
 type AppConfig struct {
 	PROD_MODE  string
-	APP_PORT   int
+	PORT       int
 	DB_USER    string
 	DB_PASS    string
 	DB_HOST    string
@@ -42,6 +42,6 @@ func NewConfig() {
 		Config.DB_USER = "root"
 	}
 	if Config.DOMAIN == "" {
-		Config.DOMAIN = "localhost:8080"
+		Config.DOMAIN = "localhost"
 	}
 }

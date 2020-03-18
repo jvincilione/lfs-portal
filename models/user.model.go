@@ -16,7 +16,7 @@ type (
 		Email     string         `json:"email,omitempty" validate:"required,email" gorm:"type:varchar(100);unique_index"`
 		Phone     string         `json:"phone,omitempty" validate:"-" gorm:"type:varchar(15)"`
 		Title     string         `json:"title,omitempty" validate:"-" gorm:"type:varchar(255)"`
-		UserType  enums.UserType `json:"userType,omitempty" validate:"required" gorm:"type:int;not null"`
+		UserType  enums.UserType `json:"userType,omitempty" gorm:"type:int;not null"`
 		Password  string         `json:"password,omitempty" validate:"required" gorm:"type:text"`
 		Company   []Company      `json:"companies" gorm:"ForeignKey:UserID"`
 		CompanyID uint           `json:"companyId" gorm:"type:int"`

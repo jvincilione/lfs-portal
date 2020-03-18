@@ -98,7 +98,8 @@ func LogoutUser(c *gin.Context) {
 }
 
 func AuthenticationMiddleware(c *gin.Context) {
-	if c.FullPath() == "/api/user/authenticate" || c.FullPath() == "/api/user/logout" {
+	logrus.Error(c.FullPath())
+	if c.FullPath() == "/api/user/authenticate" || c.FullPath() == "/api/user/logout" || !strings.HasPrefix(c.FullPath(), "/api/") {
 		c.Next()
 		return
 	}
