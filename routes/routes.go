@@ -47,6 +47,9 @@ func InitializeRoutes() *gin.Engine {
 		jobRoutes(api)
 		userRoutes(api)
 	}
+	router.NoRoute(func(c *gin.Context) {
+		c.File("./lfs-frontend/build")
+	})
 	router.Use(static.Serve("/", static.LocalFile("./lfs-frontend/build", true)))
 	return router
 }

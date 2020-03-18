@@ -18,7 +18,7 @@ func NewDb() *gorm.DB {
 	cfg := utils.Config
 	connectString := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", cfg.DB_USER, cfg.DB_PASS, cfg.DB_HOST, cfg.DB_PORT, cfg.DB_NAME)
 	if cfg.GIN_MODE == "release" {
-		connectString = fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s", cfg.DB_USER, cfg.DB_PASS, cfg.DB_HOST, cfg.DB_NAME)
+		connectString = fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?parseTime=True", cfg.DB_USER, cfg.DB_PASS, cfg.DB_HOST, cfg.DB_NAME)
 	}
 	db, err = gorm.Open("mysql", connectString)
 

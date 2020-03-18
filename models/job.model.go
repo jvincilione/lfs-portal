@@ -22,7 +22,7 @@ type (
 		ScheduledDate   *time.Time      `json:"scheduledDate,omitempty" gorm:"type:datetime"`
 		CompletededDate *time.Time      `json:"completedDate,omitempty" gorm:"type:datetime"`
 		PaymentDate     *time.Time      `json:"paymentDate,omitempty" gorm:"type:datetime"`
-		Status          enums.JobStatus `json:"status,omitempty" gorm:"type:int;not null"`
+		Status          enums.JobStatus `json:"status" gorm:"type:int;not null"`
 		PartsCost       float64         `json:"partsCost,omitempty" gorm:"type:float"`
 		LaborCost       float64         `json:"laborCost,omitempty" gorm:"type:float"`
 		Notes           string          `json:"notes,omitempty" validate:"-" gorm:"type:text"`
