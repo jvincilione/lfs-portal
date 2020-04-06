@@ -10,19 +10,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var router *gin.Engine
+var (
+	router *gin.Engine
 
-var JobModel models.JobModel
-var JobService services.JobService
-var JobController controllers.JobController
+	JobModel      models.JobModel
+	JobService    services.JobService
+	JobController controllers.JobController
 
-var CompanyModel models.CompanyModel
-var CompanyService services.CompanyService
-var CompanyController controllers.CompanyController
+	CompanyModel      models.CompanyModel
+	CompanyService    services.CompanyService
+	CompanyController controllers.CompanyController
 
-var UserModel models.UserModel
-var UserService services.UserService
-var UserController controllers.UserController
+	UserModel      models.UserModel
+	UserService    services.UserService
+	UserController controllers.UserController
+)
 
 func InitializeRoutes() *gin.Engine {
 	db := database.NewDb()
